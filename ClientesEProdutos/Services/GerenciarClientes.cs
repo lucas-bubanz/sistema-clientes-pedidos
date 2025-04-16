@@ -1,7 +1,7 @@
-using ClientesEProdutos.Interfaces;
+using ClientesEProdutos.Interfaces.IGerenciarClientes;
 using ClientesEProdutos.Models.Clientes;
 
-namespace ClientesEProdutos.Services
+namespace ClientesEProdutos.Services.GerenciarClientes
 {
     public class GerenciarClientes : IGerenciarClientes
     {
@@ -17,9 +17,9 @@ namespace ClientesEProdutos.Services
             throw new NotImplementedException();
         }
 
-        public void CadastrarNovoCliente()
+        public void CadastrarNovoCliente(Clientes clientes)
         {
-            throw new NotImplementedException();
+            _ListaDeClientes.Add(clientes);
         }
 
         public void ListarClientes()
