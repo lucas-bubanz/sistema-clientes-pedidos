@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace infra.db.ConexaoBanco
 {
-    class ApplicationContext
+    class DatabaseConnection
     {
-        public static void Connect()
+        public static void Conexao()
         {
             try
             {
