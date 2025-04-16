@@ -23,10 +23,10 @@ namespace ClientesEProdutos.Services.GerenciarClientes
         public void CadastrarNovoCliente(Clientes clientes)
         {
             _ListaDeClientes.Add(clientes);
-            string? inserirClientesNaTabela = @$"
-                    INSERT INTO clientes (nome_cliente, cpf_cliente, endereco_cliente)
-                    VALUES (@{clientes.NomeCliente}, @{clientes.CpfCliente}, @{clientes.EnderecoCliente})
-                    RETURNING codigo_cliente;
+            string inserirClientesNaTabela = @"
+                INSERT INTO clientes (nome_cliente, cpf_cliente, endereco_cliente)
+                VALUES (@nome_cliente, @cpf_cliente, @endereco_cliente)
+                RETURNING codigo_cliente;
             ";
             try
             {
