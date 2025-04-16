@@ -1,4 +1,4 @@
-﻿using infra.db.ConexaoBanco;
+﻿using Infra.db.ConexaoBanco;
 using Npgsql;
 class Program
 {

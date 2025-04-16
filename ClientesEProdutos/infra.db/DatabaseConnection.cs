@@ -1,7 +1,7 @@
 using Npgsql;
 using Microsoft.Extensions.Configuration;
 
-namespace infra.db.ConexaoBanco
+namespace Infra.db.ConexaoBanco
 {
     class DatabaseConnection
     {
