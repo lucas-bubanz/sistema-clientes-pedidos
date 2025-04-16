@@ -5,26 +5,27 @@ namespace infra.db.ConexaoBanco
 {
     class DatabaseConnection
     {
-        public static void Conexao()
+
+        public static NpgsqlConnection ObterConexaoAberta()
         {
             try
             {
-                // Configuração para carregar o arquivo appsettings.Development.json
-                var configuracao = new ConfigurationBuilder()
+                IConfiguration configuracaoApp = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("infra.db/appsettings.Development.json", optional: false, reloadOnChange: true)
                     .Build();
 
-                //Obtendo string de conexão
-                var stringDeConfiguracao = configuracao.GetConnectionString("PostgresConnection");
+                string? stringConexao = configuracaoApp.GetConnectionString("PostgresConnection");
 
-                using var conexao = new NpgsqlConnection(stringDeConfiguracao);
+                NpgsqlConnection conexao = new NpgsqlConnection(stringConexao);
                 conexao.Open();
-                Console.WriteLine("Conexão com o PostgreSQL bem-sucessida");
+                Console.WriteLine("✅ Conexão com o PostgreSQL aberta com sucesso!");
+                return conexao;
             }
-            catch (Exception ex)
+            catch (Exception erro)
             {
-                Console.WriteLine($"Erro ao conectar ao banco de dados: {ex.Message}");
+                Console.WriteLine($"❌ Erro ao conectar ao banco de dados: {erro.Message}");
+                throw;
             }
         }
     }
