@@ -1,4 +1,5 @@
-﻿class Program
+﻿using infra.db.ConexaoBanco;
+class Program
 {
     static void Main()
     {
