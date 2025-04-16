@@ -15,7 +15,7 @@ namespace Infra.db.ConexaoBanco
                     .AddJsonFile("infra.db/appsettings.Development.json", optional: false, reloadOnChange: true)
                     .Build();
 
-                string? stringConexao = configuracaoApp.GetConnectionString("PostgresConnection");
+                string stringConexao = configuracaoApp.GetConnectionString("PostgresConnection");
 
                 NpgsqlConnection conexao = new NpgsqlConnection(stringConexao);
                 conexao.Open();
