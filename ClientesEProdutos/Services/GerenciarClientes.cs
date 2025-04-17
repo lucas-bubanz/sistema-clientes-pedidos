@@ -22,7 +22,9 @@ namespace ClientesEProdutos.Services.GerenciarClientes
 
         public async Task CadastrarNovoCliente(Clientes clientes)
         {
+            await CarregaClientesBD(); //Carrega os dados já existentes no banco para a lista
             _ListaDeClientes.Add(clientes);
+
             if (conexaoComBanco.State != System.Data.ConnectionState.Open)
             {
                 await conexaoComBanco.OpenAsync();
@@ -126,6 +128,48 @@ namespace ClientesEProdutos.Services.GerenciarClientes
             using NpgsqlDataReader resultado = consultaCPF.ExecuteReader();
 
             return resultado.Read(); // true = duplicado, false = não encontrado
+        }
+
+        public async Task CarregaClientesBD()
+        {
+
+            if (conexaoComBanco.State != System.Data.ConnectionState.Open)
+            {
+                await conexaoComBanco.OpenAsync();
+            }
+
+            string consultarClientesBDeInputarNaLista = @"
+            SELECT *
+            FROM clientes
+            ";
+            using (var sessao = await conexaoComBanco.BeginTransactionAsync())
+            {
+                try
+                {
+                    using NpgsqlCommand consultaClienteBD = new NpgsqlCommand(consultarClientesBDeInputarNaLista, conexaoComBanco, sessao);
+                    consultaClienteBD.Parameters.AddWithValue("nome_cliente", "NomeClienteBanco");
+                    consultaClienteBD.Parameters.AddWithValue("cpf_cliente", "CpfClienteBanco");
+                    consultaClienteBD.Parameters.AddWithValue("endereco_cliente", "EnderecoClienteBanco");
+                    using NpgsqlDataReader resultado = await consultaClienteBD.ExecuteReaderAsync();
+
+                    while (await resultado.ReadAsync())
+                    {
+                        var cliente = new Clientes
+                        {
+                            CodigoCliente = Convert.ToInt32(resultado["codigo_cliente"]),
+                            NomeCliente = resultado["nome_cliente"].ToString(),
+                            CpfCliente = resultado["cpf_cliente"].ToString(),
+                            EnderecoCliente = resultado["endereco_cliente"].ToString(),
+                        };
+                        _ListaDeClientes.Add(cliente);
+                    }
+                    await sessao.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao carregar clientes do banco: {ex.Message}");
+                }
+            }
         }
     }
 }
