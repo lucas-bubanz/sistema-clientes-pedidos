@@ -5,7 +5,7 @@ namespace ClientesEProdutos.Interfaces.IGerenciarClientes
         Task CadastrarNovoCliente(Models.Clientes.Clientes clientes);
         Task ListarClientes();
         void RemoverClientes();
-        void AtualizarClietnes();
+        void AtualizarClientes();
         bool ValidaEFormataCPF(string CpfCliente);
         int CalcularDigito(int[] numeros, int PesoInicial);
         bool ValidaCpfDuplicadoNoBanco(string cpf_cliente);

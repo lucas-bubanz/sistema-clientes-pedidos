@@ -1,7 +1,6 @@
 using ClientesEProdutos.Interfaces.IGerenciarClientes;
 using ClientesEProdutos.Models.Clientes;
 using Npgsql;
-using Infra.db.ConexaoBanco;
 
 namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
 {
@@ -9,7 +8,6 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
     {
         private readonly List<Clientes> _ListaDeClientes;
         private readonly List<Clientes> _exibirClientes;
-
         private readonly NpgsqlConnection conexaoComBanco;
 
         public GerenciarClientes(NpgsqlConnection conexao)
@@ -19,13 +17,7 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
             _exibirClientes = new List<Clientes>();
         }
 
-        public GerenciarClientes()
-        {
-            _ListaDeClientes = new List<Clientes>();
-            _exibirClientes = new List<Clientes>();
-        }
-
-        public void AtualizarClietnes()
+        public void AtualizarClientes()
         {
             throw new NotImplementedException();
         }
@@ -39,7 +31,7 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
                 await conexaoComBanco.OpenAsync();
             }
 
-            if (!ValidaEFormataCPF(clientes.CpfCliente)) // Validação dos dígitos
+            if (!ValidaEFormataCPF(clientes.CpfCliente))
             {
                 Console.WriteLine("CPF inválido!");
                 return;
