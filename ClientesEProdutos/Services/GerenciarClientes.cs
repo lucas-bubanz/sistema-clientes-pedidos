@@ -34,7 +34,7 @@ namespace ClientesEProdutos.Services.GerenciarClientes
 
             if (ValidaCpfDuplicadoNoBanco(cpf_cliente))
             {
-                Console.WriteLine("CPF já cadastrado na base de dados");
+                Console.WriteLine($"CPF [{clientes.CpfCliente} - {clientes.NomeCliente}] já cadastrado na base de dados");
                 return;
             }
 
