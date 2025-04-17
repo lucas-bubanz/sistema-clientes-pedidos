@@ -69,12 +69,10 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
                 catch (Npgsql.PostgresException FkCpf) when (FkCpf.SqlState == "23505")
                 {
                     Console.WriteLine($"Erro: CPF já está cadastrado {FkCpf.Message}!");
-                    // Rollback automático pelo 'using'
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Erro ao inserir Cliente no Banco: {ex.Message}");
-                    // Rollback automático pelo 'using'
                 }
             }
         }
@@ -92,29 +90,37 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
             }
             using (var sessao = await conexaoComBanco.BeginTransactionAsync())
             {
-                using var consultaClientesResult = new NpgsqlCommand(consultaClientes, conexaoComBanco);
-                using var resultado = await consultaClientesResult.ExecuteReaderAsync();
+                try
+                {
+                    using var consultaClientesResult = new NpgsqlCommand(consultaClientes, conexaoComBanco);
+                    using var resultado = await consultaClientesResult.ExecuteReaderAsync();
 
-                while (await resultado.ReadAsync())
-                {
-                    var cliente = new Clientes
+                    while (await resultado.ReadAsync())
                     {
-                        CodigoCliente = Convert.ToInt32(resultado["codigo_cliente"]),
-                        NomeCliente = resultado["nome_cliente"].ToString(),
-                        CpfCliente = resultado["cpf_cliente"].ToString(),
-                        EnderecoCliente = resultado["endereco_cliente"].ToString()
-                    };
-                    _exibirClientes.Add(cliente);
+                        var cliente = new Clientes
+                        {
+                            CodigoCliente = Convert.ToInt32(resultado["codigo_cliente"]),
+                            NomeCliente = resultado["nome_cliente"].ToString(),
+                            CpfCliente = resultado["cpf_cliente"].ToString(),
+                            EnderecoCliente = resultado["endereco_cliente"].ToString()
+                        };
+                        _exibirClientes.Add(cliente);
+                    }
+                    foreach (var cliente in _exibirClientes)
+                    {
+                        Console.WriteLine("<|================================================|>");
+                        Console.WriteLine($"=> Código: {cliente.CodigoCliente}");
+                        Console.WriteLine($"=> Nome: {cliente.NomeCliente}");
+                        Console.WriteLine($"=> CPF: {cliente.CpfCliente}");
+                        Console.WriteLine($"=> Endereço: {cliente.EnderecoCliente}");
+                        Console.WriteLine("<|================================================|>");
+                    }
                 }
-                foreach (var cliente in _exibirClientes)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("<|================================================|>");
-                    Console.WriteLine($"=> Código: {cliente.CodigoCliente}");
-                    Console.WriteLine($"=> Nome: {cliente.NomeCliente}");
-                    Console.WriteLine($"=> CPF: {cliente.CpfCliente}");
-                    Console.WriteLine($"=> Endereço: {cliente.EnderecoCliente}");
-                    Console.WriteLine("<|================================================|>");
+                    Console.WriteLine($"❌ Erro ao listar os clientes: {ex.Message}");
                 }
+
             }
         }
 
@@ -159,14 +165,12 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
                     }
                     else
                     {
-                        Console.WriteLine("⚠️ Cliente não encontrado.");
-                        await sessao.RollbackAsync();
+                        Console.WriteLine("⚠️ Cliente não encontrado ou já removido.");
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"❌ Erro ao remover cliente: {ex.Message}");
-                    await sessao.RollbackAsync();
                 }
             }
 
