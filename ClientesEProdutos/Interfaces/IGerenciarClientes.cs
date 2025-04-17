@@ -4,7 +4,7 @@ namespace ClientesEProdutos.Interfaces.IGerenciarClientes
     {
         Task CadastrarNovoCliente(Models.Clientes.Clientes clientes);
         Task ListarClientes();
-        void RemoverClientes();
+        Task RemoverClientes(string CpfCliente);
         void AtualizarClientes();
         bool ValidaEFormataCPF(string CpfCliente);
         int CalcularDigito(int[] numeros, int PesoInicial);

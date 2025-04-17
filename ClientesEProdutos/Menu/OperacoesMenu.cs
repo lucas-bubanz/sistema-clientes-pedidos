@@ -16,6 +16,11 @@ namespace ClientesEProdutos.Menu.Operacoes
         {
             await _gerenciadorDeClientes.ListarClientes();
         }
+
+        public async Task RemoverClientes()
+        {
+            await _gerenciadorDeClientes.RemoverClientes("04153962040");
+        }
         public void MoldaCliente(string NomeCliente, string CpfCliente, string EnderecoCliente)
         {
             cliente = new Clientes

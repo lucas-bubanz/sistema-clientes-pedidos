@@ -118,9 +118,58 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
             }
         }
 
-        public void RemoverClientes()
+        public async Task RemoverClientes(string CpfCliente)
         {
-            throw new NotImplementedException();
+            string consultaClienteParaRemover = @"
+                SELECT codigo_cliente
+                FROM clientes
+                WHERE cpf_cliente = @CpfCliente;
+            ";
+
+            string comandoRemoverCliente = @"
+                DELETE FROM clientes
+                WHERE cpf_cliente = @CpfCliente;
+            ";
+
+            if (conexaoComBanco.State != System.Data.ConnectionState.Open)
+            {
+                await conexaoComBanco.OpenAsync();
+            }
+
+            using (var sessao = await conexaoComBanco.BeginTransactionAsync())
+            {
+                try
+                {
+                    using var consultaClientesResult = new NpgsqlCommand(consultaClienteParaRemover, conexaoComBanco, sessao);
+                    consultaClientesResult.Parameters.AddWithValue("@CpfCliente", CpfCliente);
+
+                    using var resultadoParaRemover = await consultaClientesResult.ExecuteReaderAsync();
+
+                    if (await resultadoParaRemover.ReadAsync())
+                    {
+                        int codigoCliente = Convert.ToInt32(resultadoParaRemover["codigo_cliente"]);
+                        resultadoParaRemover.Close(); // ❗ Importante: fechar antes de executar outro comando com mesma conexão
+
+                        using var comandoRemover = new NpgsqlCommand(comandoRemoverCliente, conexaoComBanco, sessao);
+                        comandoRemover.Parameters.AddWithValue("@CpfCliente", CpfCliente);
+                        await comandoRemover.ExecuteNonQueryAsync();
+
+                        await sessao.CommitAsync();
+                        Console.WriteLine($"✅ Cliente com CPF {CpfCliente} removido com sucesso (ID {codigoCliente})!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("⚠️ Cliente não encontrado.");
+                        await sessao.RollbackAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Erro ao remover cliente: {ex.Message}");
+                    await sessao.RollbackAsync();
+                }
+            }
+
         }
 
         public bool ValidaEFormataCPF(string CpfCliente)
