@@ -1,24 +1,24 @@
+using System.Threading.Tasks;
 using ClientesEProdutos.Menu.Operacoes;
+using ClientesEProdutos.Services.GerenciarClientesApplicacao;
+using Npgsql;
 
 namespace ClientesEProdutos.Menu.Menu
 {
     public class Menu
     {
         private readonly OperacoesMenu _operacoesMenu;
-        public Menu()
+        private readonly GerenciarClientes _gerenciarClientes;
+
+        public Menu(NpgsqlConnection conexao)
         {
-            _operacoesMenu = new OperacoesMenu();
+            _gerenciarClientes = new GerenciarClientes(conexao);
+            _operacoesMenu = new OperacoesMenu(_gerenciarClientes);
         }
 
-        public void Executar()
+        public async Task Executar()
         {
-            // _operacoesMenu.MoldaCliente("Lucas", "01879117037", "Ivoti");
-            // _operacoesMenu.MoldaCliente("Gabriel", "529.982.247-25", "Dois Irmãos");
-            // _operacoesMenu.MoldaCliente("Pedro", "111.444.777-35", "Travessão");
-            // _operacoesMenu.MoldaCliente("Pedro Augusto Johann", "04153962040", "Dois Irmãos");
-            // _operacoesMenu.MoldaCliente("Braitwaite", "92843529085", "Alvorada");
-            // _operacoesMenu.MoldaCliente("Alanpa", "036.684.480-60", "Joinville");
-            _operacoesMenu.MoldaCliente("Mateus", "36640111047", "Porto Alegre");
+            await _operacoesMenu.ListarClientes();
         }
     }
 }

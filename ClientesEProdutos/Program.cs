@@ -1,9 +1,12 @@
-﻿using ClientesEProdutos.Menu.Menu;
+﻿using System.Threading.Tasks;
+using ClientesEProdutos.Menu.Menu;
+using Infra.db.ConexaoBanco;
 class Program
 {
-    static void Main()
+    static async Task Main()
     {
-        var menu = new Menu();
-        menu.Executar();
+        var conexao = DatabaseConnection.ObterConexaoAberta();
+        var menu = new Menu(conexao);
+        await menu.Executar();
     }
 }

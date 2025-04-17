@@ -8,12 +8,21 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
     public class GerenciarClientes : IGerenciarClientes
     {
         private readonly List<Clientes> _ListaDeClientes;
+        private readonly List<Clientes> _exibirClientes;
 
-        public NpgsqlConnection conexaoComBanco = DatabaseConnection.ObterConexaoAberta();
+        private readonly NpgsqlConnection conexaoComBanco;
+
+        public GerenciarClientes(NpgsqlConnection conexao)
+        {
+            conexaoComBanco = conexao;
+            _ListaDeClientes = new List<Clientes>();
+            _exibirClientes = new List<Clientes>();
+        }
 
         public GerenciarClientes()
         {
             _ListaDeClientes = new List<Clientes>();
+            _exibirClientes = new List<Clientes>();
         }
 
         public void AtualizarClietnes()
@@ -78,9 +87,43 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
             }
         }
 
-        public void ListarClientes()
+        public async Task ListarClientes()
         {
-            throw new NotImplementedException();
+            string consultaClientes = @"
+                SELECT codigo_cliente, nome_cliente, cpf_cliente, endereco_cliente
+                FROM clientes;
+            ";
+
+            if (conexaoComBanco.State != System.Data.ConnectionState.Open)
+            {
+                await conexaoComBanco.OpenAsync();
+            }
+            using (var sessao = await conexaoComBanco.BeginTransactionAsync())
+            {
+                using var consultaClientesResult = new NpgsqlCommand(consultaClientes, conexaoComBanco);
+                using var resultado = await consultaClientesResult.ExecuteReaderAsync();
+
+                while (await resultado.ReadAsync())
+                {
+                    var cliente = new Clientes
+                    {
+                        CodigoCliente = Convert.ToInt32(resultado["codigo_cliente"]),
+                        NomeCliente = resultado["nome_cliente"].ToString(),
+                        CpfCliente = resultado["cpf_cliente"].ToString(),
+                        EnderecoCliente = resultado["endereco_cliente"].ToString()
+                    };
+                    _exibirClientes.Add(cliente);
+                }
+                foreach (var cliente in _exibirClientes)
+                {
+                    Console.WriteLine("<|================================================|>");
+                    Console.WriteLine($"=> Código: {cliente.CodigoCliente}");
+                    Console.WriteLine($"=> Nome: {cliente.NomeCliente}");
+                    Console.WriteLine($"=> CPF: {cliente.CpfCliente}");
+                    Console.WriteLine($"=> Endereço: {cliente.EnderecoCliente}");
+                    Console.WriteLine("<|================================================|>");
+                }
+            }
         }
 
         public void RemoverClientes()

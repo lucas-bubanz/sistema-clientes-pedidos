@@ -3,7 +3,7 @@ namespace ClientesEProdutos.Interfaces.IGerenciarClientes
     public interface IGerenciarClientes
     {
         Task CadastrarNovoCliente(Models.Clientes.Clientes clientes);
-        void ListarClientes();
+        Task ListarClientes();
         void RemoverClientes();
         void AtualizarClietnes();
         bool ValidaEFormataCPF(string CpfCliente);

@@ -8,11 +8,14 @@ namespace ClientesEProdutos.Menu.Operacoes
     {
         private readonly IGerenciarClientes _gerenciadorDeClientes;
         public Clientes cliente = new();
-        public OperacoesMenu()
+        public OperacoesMenu(GerenciarClientes gerenciarClientes)
         {
-            _gerenciadorDeClientes = new GerenciarClientes();
+            _gerenciadorDeClientes = gerenciarClientes;
         }
-
+        public async Task ListarClientes()
+        {
+            await _gerenciadorDeClientes.ListarClientes();
+        }
         public void MoldaCliente(string NomeCliente, string CpfCliente, string EnderecoCliente)
         {
             cliente = new Clientes
