@@ -55,7 +55,7 @@ namespace ClientesEProdutos.Services.GerenciarClientes
                 Console.WriteLine($"Cliente {clientes.NomeCliente} adicionado com sucesso com ID: {clientes.CodigoCliente}");
                 clientes.CpfCliente = CpfFormatado;
             }
-            catch (Npgsql.PostgresException FkCpf) when (ex.SqlState == "23505")
+            catch (Npgsql.PostgresException FkCpf) when (FkCpf.SqlState == "23505")
             {
                 Console.WriteLine($"Erro: CPF já está cadastrado {FkCpf}!");
             }
