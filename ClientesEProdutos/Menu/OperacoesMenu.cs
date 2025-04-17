@@ -1,6 +1,6 @@
 using ClientesEProdutos.Interfaces.IGerenciarClientes;
 using ClientesEProdutos.Models.Clientes;
-using ClientesEProdutos.Services.GerenciarClientes;
+using ClientesEProdutos.Services.GerenciarClientesApplicacao;
 
 namespace ClientesEProdutos.Menu.Operacoes
 {
