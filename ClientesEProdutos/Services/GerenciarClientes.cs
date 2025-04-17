@@ -30,10 +30,15 @@ namespace ClientesEProdutos.Services.GerenciarClientes
                 return;
             }
 
+            if (ValidaCpfDuplicadoNoBanco(clientes.CpfCliente))
+            {
+                Console.WriteLine("CPF já cadastrado na base de dados");
+                return;
+            }
 
             string inserirClientesNaTabela = @"
                 INSERT INTO clientes (nome_cliente, cpf_cliente, endereco_cliente)
-                VALUES (@nome_cliente, @cpf, @endereco_cliente)
+                VALUES (@nome_cliente, @cpf_cliente, @endereco_cliente)
                 RETURNING codigo_cliente;
             ";
             try
@@ -89,6 +94,21 @@ namespace ClientesEProdutos.Services.GerenciarClientes
 
             int resto = soma % 11;
             return resto < 2 ? 0 : 11 - resto;
+        }
+
+        public bool ValidaCpfDuplicadoNoBanco(string CpfCliente)
+        {
+            string consultaCpfnoBanco = @"
+                SELECT *
+                FROM clientes
+                WHERE cpf_cliente = @CpfCliente
+            ";
+
+            using NpgsqlCommand consultaCPF = new NpgsqlCommand(consultaCpfnoBanco, conexaoComBanco);
+            consultaCPF.Parameters.AddWithValue("CpfCliente", CpfCliente);
+            using NpgsqlDataReader resultado = consultaCPF.ExecuteReader();
+
+            return resultado.Read(); // true = duplicado, false = não encontrado
         }
     }
 }
