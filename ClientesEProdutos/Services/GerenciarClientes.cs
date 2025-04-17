@@ -50,7 +50,7 @@ namespace ClientesEProdutos.Services.GerenciarClientes
                 insereClienteNoBanco.Parameters.AddWithValue("cpf_cliente", clientes.CpfCliente);
                 insereClienteNoBanco.Parameters.AddWithValue("endereco_cliente", clientes.EnderecoCliente);
 
-                // Agora usamos ExecuteScalar para obter o código_cliente gerado
+                // 'ExecuteScalar' para obter o código_cliente gerado
                 clientes.CodigoCliente = Convert.ToInt32(insereClienteNoBanco.ExecuteScalar());
                 Console.WriteLine($"Cliente {clientes.NomeCliente} adicionado com sucesso com ID: {clientes.CodigoCliente}");
                 clientes.CpfCliente = CpfFormatado;

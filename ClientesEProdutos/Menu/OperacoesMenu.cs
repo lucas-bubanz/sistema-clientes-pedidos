@@ -22,6 +22,11 @@ namespace ClientesEProdutos.Menu.Operacoes
                 EnderecoCliente = EnderecoCliente
             };
 
+            if (String.IsNullOrEmpty(cliente.CpfCliente) || String.IsNullOrEmpty(cliente.NomeCliente))
+            {
+                Console.WriteLine("O CPF ou Nome do cliente não podem ser Nulo ou vázio.");
+                return;
+            }
             _gerenciadorDeClientes.CadastrarNovoCliente(cliente);
         }
     }
