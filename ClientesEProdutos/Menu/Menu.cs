@@ -15,6 +15,7 @@ namespace ClientesEProdutos.Menu.Menu
             _operacoesMenu.MoldaCliente("Lucas", "01879117037", "Ivoti");
             _operacoesMenu.MoldaCliente("Gabriel", "529.982.247-25", "Dois Irmãos");
             _operacoesMenu.MoldaCliente("Pedro", "111.444.777-35", "Travessão");
+            _operacoesMenu.MoldaCliente("Pedro Augusto Johann", "04153962040", "Dois Irmãos");
         }
     }
 }

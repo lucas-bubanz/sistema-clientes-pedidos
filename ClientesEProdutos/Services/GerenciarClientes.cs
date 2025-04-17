@@ -20,9 +20,13 @@ namespace ClientesEProdutos.Services.GerenciarClientes
             throw new NotImplementedException();
         }
 
-        public void CadastrarNovoCliente(Clientes clientes)
+        public async Task CadastrarNovoCliente(Clientes clientes)
         {
             _ListaDeClientes.Add(clientes);
+            if (conexaoComBanco.State != System.Data.ConnectionState.Open)
+            {
+                await conexaoComBanco.OpenAsync();
+            }
 
             if (!ValidaEFormataCPF(clientes.CpfCliente)) // Validação dos dígitos
             {
@@ -43,27 +47,33 @@ namespace ClientesEProdutos.Services.GerenciarClientes
                 VALUES (@nome_cliente, @cpf_cliente, @endereco_cliente)
                 RETURNING codigo_cliente;
             ";
-            try
+            using (var sessao = await conexaoComBanco.BeginTransactionAsync())
             {
-                using NpgsqlCommand insereClienteNoBanco = new NpgsqlCommand(inserirClientesNaTabela, conexaoComBanco);
-                insereClienteNoBanco.Parameters.AddWithValue("nome_cliente", clientes.NomeCliente);
-                insereClienteNoBanco.Parameters.AddWithValue("cpf_cliente", clientes.CpfCliente);
-                insereClienteNoBanco.Parameters.AddWithValue("endereco_cliente", clientes.EnderecoCliente);
+                try
+                {
+                    using NpgsqlCommand insereClienteNoBanco = new NpgsqlCommand(inserirClientesNaTabela, conexaoComBanco, sessao);
+                    insereClienteNoBanco.Parameters.AddWithValue("nome_cliente", clientes.NomeCliente);
+                    insereClienteNoBanco.Parameters.AddWithValue("cpf_cliente", clientes.CpfCliente);
+                    insereClienteNoBanco.Parameters.AddWithValue("endereco_cliente", clientes.EnderecoCliente);
 
-                // 'ExecuteScalar' para obter o código_cliente gerado
-                clientes.CodigoCliente = Convert.ToInt32(insereClienteNoBanco.ExecuteScalar());
-                Console.WriteLine($"Cliente {clientes.NomeCliente} adicionado com sucesso com ID: {clientes.CodigoCliente}");
-                clientes.CpfCliente = CpfFormatado;
-            }
-            catch (Npgsql.PostgresException FkCpf) when (FkCpf.SqlState == "23505")
-            {
-                Console.WriteLine($"Erro: CPF já está cadastrado {FkCpf}!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro ao inserir Cliente no Banco: {ex}");
-            }
+                    clientes.CodigoCliente = Convert.ToInt32(await insereClienteNoBanco.ExecuteScalarAsync());
 
+                    Console.WriteLine($"Cliente {clientes.NomeCliente} adicionado com sucesso com ID: {clientes.CodigoCliente}");
+                    clientes.CpfCliente = CpfFormatado;
+
+                    await sessao.CommitAsync();
+                }
+                catch (Npgsql.PostgresException FkCpf) when (FkCpf.SqlState == "23505")
+                {
+                    Console.WriteLine($"Erro: CPF já está cadastrado {FkCpf.Message}!");
+                    // Rollback automático pelo 'using'
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao inserir Cliente no Banco: {ex.Message}");
+                    // Rollback automático pelo 'using'
+                }
+            }
         }
 
         public void ListarClientes()
