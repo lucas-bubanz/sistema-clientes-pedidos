@@ -23,9 +23,17 @@ namespace ClientesEProdutos.Services.GerenciarClientes
         public void CadastrarNovoCliente(Clientes clientes)
         {
             _ListaDeClientes.Add(clientes);
+
+            if (!ValidaEFormataCPF(clientes.CpfCliente)) // Validação dos dígitos
+            {
+                Console.WriteLine("CPF inválido!");
+                return;
+            }
+
+
             string inserirClientesNaTabela = @"
                 INSERT INTO clientes (nome_cliente, cpf_cliente, endereco_cliente)
-                VALUES (@nome_cliente, @cpf_cliente, @endereco_cliente)
+                VALUES (@nome_cliente, @cpf, @endereco_cliente)
                 RETURNING codigo_cliente;
             ";
             try
@@ -54,6 +62,33 @@ namespace ClientesEProdutos.Services.GerenciarClientes
         public void RemoverClientes()
         {
             throw new NotImplementedException();
+        }
+
+        public bool ValidaEFormataCPF(string CpfCliente)
+        {
+            // Remove formatação
+            CpfCliente = new string(CpfCliente.Where(char.IsDigit).ToArray());
+
+            // Verifica se tem 11 dígitos e não é uma sequência repetida
+            if (CpfCliente.Length != 11 || CpfCliente.Distinct().Count() == 1)
+                return false;
+
+            // Calcula os dígitos verificadores
+            int[] digitos = CpfCliente.Select(c => int.Parse(c.ToString())).ToArray();
+            int digito1 = CalcularDigito(digitos.Take(9).ToArray(), 10);
+            int digito2 = CalcularDigito(digitos.Take(10).ToArray(), 11);
+
+            return digitos[9] == digito1 && digitos[10] == digito2;
+        }
+
+        public int CalcularDigito(int[] numeros, int PesoInicial)
+        {
+            int soma = 0;
+            for (int i = 0; i < numeros.Length; i++)
+                soma += numeros[i] * (PesoInicial - i);
+
+            int resto = soma % 11;
+            return resto < 2 ? 0 : 11 - resto;
         }
     }
 }
