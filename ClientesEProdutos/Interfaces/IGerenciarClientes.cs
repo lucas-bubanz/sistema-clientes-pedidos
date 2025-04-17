@@ -8,6 +8,6 @@ namespace ClientesEProdutos.Interfaces.IGerenciarClientes
         void AtualizarClietnes();
         bool ValidaEFormataCPF(string CpfCliente);
         int CalcularDigito(int[] numeros, int PesoInicial);
-        bool ValidaCpfDuplicadoNoBanco(string CpfCliente);
+        bool ValidaCpfDuplicadoNoBanco(string cpf_cliente);
     }
 }

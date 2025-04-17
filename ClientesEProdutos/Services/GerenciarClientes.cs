@@ -29,8 +29,10 @@ namespace ClientesEProdutos.Services.GerenciarClientes
                 Console.WriteLine("CPF inválido!");
                 return;
             }
+            var CpfFormatado = clientes.CpfCliente;
+            var cpf_cliente = new string(clientes.CpfCliente.Where(char.IsDigit).ToArray());
 
-            if (ValidaCpfDuplicadoNoBanco(clientes.CpfCliente))
+            if (ValidaCpfDuplicadoNoBanco(cpf_cliente))
             {
                 Console.WriteLine("CPF já cadastrado na base de dados");
                 return;
@@ -51,6 +53,7 @@ namespace ClientesEProdutos.Services.GerenciarClientes
                 // Agora usamos ExecuteScalar para obter o código_cliente gerado
                 clientes.CodigoCliente = Convert.ToInt32(insereClienteNoBanco.ExecuteScalar());
                 Console.WriteLine($"Cliente {clientes.NomeCliente} adicionado com sucesso com ID: {clientes.CodigoCliente}");
+                clientes.CpfCliente = CpfFormatado;
             }
             catch (Exception ex)
             {
