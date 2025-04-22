@@ -19,7 +19,8 @@ namespace ClientesEProdutos.Menu.Menu
         public async Task Executar()
         {
             // await _operacoesMenu.ListarClientes();
-            await _operacoesMenu.RemoverClientes();
+            // await _operacoesMenu.RemoverClientes();
+            await _operacoesMenu.AtualizarClientes();
         }
     }
 }

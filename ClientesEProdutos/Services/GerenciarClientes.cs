@@ -1,10 +1,11 @@
+using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Interfaces.IGerenciarClientes;
 using ClientesEProdutos.Models.Clientes;
 using Npgsql;
 
 namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
 {
-    public class GerenciarClientes : IGerenciarClientes
+    public class GerenciarClientes : IGerenciarClientes, IValidaCPF
     {
         private readonly List<Clientes> _ListaDeClientes;
         private readonly List<Clientes> _exibirClientes;
@@ -17,9 +18,43 @@ namespace ClientesEProdutos.Services.GerenciarClientesApplicacao
             _exibirClientes = new List<Clientes>();
         }
 
-        public void AtualizarClientes()
+        public async Task AtualizarClientes(string comandoDeAtualizacao, string cpfDoClienteParaAtualizar)
         {
-            throw new NotImplementedException();
+            if (conexaoComBanco.State != System.Data.ConnectionState.Open)
+            {
+                await conexaoComBanco.OpenAsync();
+            }
+
+            if (String.IsNullOrEmpty(comandoDeAtualizacao))
+            {
+                Console.WriteLine("A opção não pode ser nula ou vázia.");
+                return;
+            }
+            using (var sessao = await conexaoComBanco.BeginTransactionAsync())
+            {
+                if (ValidaCpfDuplicadoNoBanco(cpfDoClienteParaAtualizar))
+                {
+                    try
+                    {
+                        using (var comando = new NpgsqlCommand(comandoDeAtualizacao, conexaoComBanco, sessao))
+                        {
+                            int linhasAfetadas = await comando.ExecuteNonQueryAsync();
+                            Console.WriteLine($"✅ {linhasAfetadas} linha(s) atualizada(s) com sucesso.");
+                        }
+                        await sessao.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ Erro ao atualizar cliente(s): {ex.Message}");
+                        throw;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Cliente não encontrado!");
+                    return;
+                }
+            }
         }
 
         public async Task CadastrarNovoCliente(Clientes clientes)
