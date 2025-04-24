@@ -1,12 +1,23 @@
-﻿using System.Threading.Tasks;
-using ClientesEProdutos.Menu.Menu;
-using Infra.db.ConexaoBanco;
-class Program
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    static async Task Main()
-    {
-        var conexao = DatabaseConnection.ObterConexaoAberta();
-        var menu = new Menu(conexao);
-        await menu.Executar();
-    }
+    app.MapOpenApi();
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

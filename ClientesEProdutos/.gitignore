@@ -6,9 +6,6 @@
 # dotenv files
 .env
 
-# JSON files
-*.json
-
 # User-specific files
 *.rsuser
 *.suo
