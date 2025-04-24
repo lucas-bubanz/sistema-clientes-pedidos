@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationDBContext.Data;
+using ClientesEProdutos.Interfaces;
+using ClientesEProdutos.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientesEProdutos.Startup
@@ -22,6 +24,8 @@ namespace ClientesEProdutos.Startup
             // Configura o DbContext com o Entity Framework Core
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
             // Adiciona suporte a controladores
             services.AddControllers();
