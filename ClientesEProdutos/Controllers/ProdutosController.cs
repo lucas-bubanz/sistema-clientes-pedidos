@@ -38,10 +38,7 @@ namespace ClientesEProdutos.Controllers
 
         [HttpPost]
         [Route("adicionarProduto")]
-        public async Task<IActionResult> PostAsync
-        (
-            [FromBody] Produtos produto
-        )
+        public async Task<IActionResult> PostAsync([FromBody] Produtos produto)
         {
             await _repository.AdicionarProdutoAsync(produto);
             return CreatedAtAction(nameof(Get), new { id = produto.Codigo_produto }, produto);
@@ -49,11 +46,7 @@ namespace ClientesEProdutos.Controllers
 
         [HttpPut]
         [Route("atualizarProduto/{id}")]
-        public async Task<IActionResult> PutAsync
-        (
-            int id,
-            [FromBody] Produtos produto
-        )
+        public async Task<IActionResult> PutAsync(int id, [FromBody] Produtos produto)
         {
             if (id != produto.Codigo_produto) return BadRequest();
             await _repository.AtualizarProdutoAsync(produto);
@@ -62,8 +55,7 @@ namespace ClientesEProdutos.Controllers
 
         [HttpDelete]
         [Route("removerProduto/{id}")]
-        public async Task<IActionResult> DeleteAsync
-        (int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             await _repository.RemoverProdutoAsync(id);
             return NoContent();
