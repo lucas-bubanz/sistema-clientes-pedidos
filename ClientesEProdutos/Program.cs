@@ -1,12 +1,17 @@
-﻿using System.Threading.Tasks;
-using ClientesEProdutos.Menu.Menu;
-using Infra.db.ConexaoBanco;
+using Microsoft.EntityFrameworkCore;
+using ApplicationDBContext.Data;
+using ClientesEProdutos.Startup;
+
 class Program
 {
-    static async Task Main()
+    public static void Main(string[] args)
     {
-        var conexao = DatabaseConnection.ObterConexaoAberta();
-        var menu = new Menu(conexao);
-        await menu.Executar();
+        CreateHostBuilder(args).Build().Run();
     }
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.UseStartup<Startup>();
+        });
 }
