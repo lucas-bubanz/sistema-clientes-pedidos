@@ -26,6 +26,7 @@ namespace ClientesEProdutos.Startup
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            services.AddScoped<IClienteRepository, ClienteRepository>();
 
             // Adiciona suporte a controladores
             services.AddControllers();
