@@ -9,7 +9,7 @@ namespace ClientesEProdutos.Models.Entities
         [Key]
         public int Codigo_produto { get; set; }
         [Required]
-        public string? Nome_produto { get; set; }
+        public string Nome_produto { get; set; }
         [Required]
         public decimal ValorProduto { get; set; }
         [Column("descricao_produto")]

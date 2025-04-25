@@ -18,7 +18,7 @@ namespace ClientesEProdutos.Repositories
             _context = context;
         }
 
-        public Produtos? GetPorId(int id) => _context.produtos.FirstOrDefault(c => c.Codigo_produto == id);
+        public Produtos GetPorId(int id) => _context.produtos.FirstOrDefault(c => c.Codigo_produto == id);
 
         public IEnumerable<Produtos> GetProdutos() => _context.produtos.ToList();
 

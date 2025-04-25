@@ -7,7 +7,7 @@ namespace ClientesEProdutos.Models.Entities
         [Key]
         public int Codigo_cliente { get; set; }
         [Required]
-        public string? Nome_cliente { get; set; }
-        public string? Endereco_cliente { get; set; }
+        public string Nome_cliente { get; set; }
+        public string Endereco_cliente { get; set; }
     }
 }
