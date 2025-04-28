@@ -21,7 +21,7 @@ namespace ClientesEProdutos.Models.Entities
 
         [Required]
         [Column("data_pedido")]
-        public DateTime DataPedido { get; set; } = DateTime.Now;
+        public DateTime DataPedido { get; set; } = DateTime.UtcNow;
 
         [Required]
         [Column("valor_total")]

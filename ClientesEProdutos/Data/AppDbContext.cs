@@ -17,6 +17,7 @@ namespace ApplicationDBContext.Data
         public DbSet<Clientes> clientes { get; set; }
         public DbSet<Produtos> produtos { get; set; }
         public DbSet<PrePedido> PrePedidos { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
