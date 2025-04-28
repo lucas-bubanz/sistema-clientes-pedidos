@@ -27,23 +27,7 @@ namespace ClientesEProdutos.Models.Entities
         [Column("endereco_cliente")]
         public string EnderecoCliente { get; set; }
 
-        // Informações do Produto
-        [Required]
-        [Column("codigo_produto")]
-        public int CodigoProduto { get; set; }
-        public Produtos Produto { get; set; } // Chave estrangeira para Produto
-
-        [Required]
-        [Column("nome_produto")]
-        public string NomeProduto { get; set; }
-
-        [Required]
-        [Column("valor_produto")]
-        public decimal ValorProduto { get; set; }
-
-        [Column("descricao_produto")]
-        public string DescricaoProduto { get; set; }
-
+        // Coleção de produtos no pré-pedido
         public ICollection<PrePedidoProduto> PrePedidoProdutos { get; set; }
     }
 }
