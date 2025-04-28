@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
-using ClientesEProdutos.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ClientesEProdutos.Controllers
 {
@@ -25,6 +18,9 @@ namespace ClientesEProdutos.Controllers
         [HttpPost("pre-pedido")]
         public async Task<IActionResult> CriarPrePedido([FromBody] PrePedido prePedido)
         {
+            var validacao = ValidarModelo();
+            if (validacao != null) return validacao;
+
             var novoPrePedido = await _pedidoRepository.CriarPrePedidoAsync(prePedido);
             return CreatedAtAction(nameof(CriarPrePedido), new { id = novoPrePedido.IdPrePedido }, novoPrePedido);
         }
@@ -40,20 +36,57 @@ namespace ClientesEProdutos.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListarPedidos()
+        public async Task<IActionResult> ListarPedidos([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var pedidos = await _pedidoRepository.ListarPedidosAsync();
-            return Ok(pedidos);
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            var totalRegistros = await _pedidoRepository.ObterTotalPedidosAsync();
+            var pedidos = await _pedidoRepository.ListarPedidosAsync(page, pageSize);
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                Pedidos = pedidos
+            };
+
+            return Ok(resposta);
         }
 
         [HttpGet("{pedidoId}")]
         public async Task<IActionResult> ConsultarPedido(int pedidoId)
         {
+            var existencia = await VerificarExistenciaPedido(pedidoId);
+            if (existencia != null) return existencia;
+
             var pedido = await _pedidoRepository.ConsultarPedidoAsync(pedidoId);
             if (pedido == null)
                 return NotFound("Pedido não encontrado.");
 
             return Ok(pedido);
+        }
+
+        private async Task<IActionResult> VerificarExistenciaPedido(int pedidoId)
+        {
+            var pedido = await _pedidoRepository.ConsultarPedidoAsync(pedidoId);
+            if (pedido == null)
+            {
+                return NotFound($"Pedido com ID {pedidoId} não encontrado.");
+            }
+            return null; // Indica que o pedido existe
+        }
+
+        private IActionResult ValidarModelo()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return null;
         }
     }
 

@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ClientesEProdutos.Controllers
 {
@@ -25,13 +19,35 @@ namespace ClientesEProdutos.Controllers
 
         [HttpGet]
         [Route("todosProdutos")]
-        public IActionResult Get() => Ok(_repository.GetProdutos());
+        public async Task<IActionResult> ListarProdutos([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            var totalRegistros = await _repository.ObterTotalProdutosAsync();
+            var produtos = await _repository.ListarProdutosAsync(page, pageSize);
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                Produtos = produtos
+            };
+
+            return Ok(resposta);
+        }
 
         [HttpGet]
         [Route("produtosId/{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var produto = _repository.GetPorId(id);
+            var existencia = await VerificarExistenciaProduto(id);
+            if (existencia != null) return existencia;
+
+            var produto = await _repository.GetPorIdAsync(id);
             if (produto == null) return NotFound();
             return Ok(produto);
         }
@@ -40,6 +56,9 @@ namespace ClientesEProdutos.Controllers
         [Route("adicionarProduto")]
         public async Task<IActionResult> PostAsync([FromBody] Produtos produto)
         {
+            var validacao = ValidarModelo();
+            if (validacao != null) return validacao;
+
             await _repository.AdicionarProdutoAsync(produto);
             return CreatedAtAction(nameof(Get), new { id = produto.Codigo_produto }, produto);
         }
@@ -48,7 +67,14 @@ namespace ClientesEProdutos.Controllers
         [Route("atualizarProduto/{id}")]
         public async Task<IActionResult> PutAsync(int id, [FromBody] Produtos produto)
         {
-            if (id != produto.Codigo_produto) return BadRequest();
+            var validacao = ValidarModelo();
+            if (validacao != null) return validacao;
+
+            if (id != produto.Codigo_produto) return BadRequest("O ID fornecido não corresponde ao produto.");
+
+            var existencia = await VerificarExistenciaProduto(id);
+            if (existencia != null) return existencia;
+
             await _repository.AtualizarProdutoAsync(produto);
             return NoContent();
         }
@@ -57,8 +83,30 @@ namespace ClientesEProdutos.Controllers
         [Route("removerProduto/{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
+            var existencia = await VerificarExistenciaProduto(id);
+            if (existencia != null) return existencia;
+
             await _repository.RemoverProdutoAsync(id);
             return NoContent();
+        }
+
+        private IActionResult ValidarModelo()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return null;
+        }
+
+        private async Task<IActionResult> VerificarExistenciaProduto(int id)
+        {
+            var produto = await _repository.GetPorIdAsync(id);
+            if (produto == null)
+            {
+                return NotFound($"Produto com ID {id} não encontrado.");
+            }
+            return null;
         }
     }
 }

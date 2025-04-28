@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
@@ -18,9 +14,23 @@ namespace ClientesEProdutos.Repositories
             _context = context;
         }
 
-        public Produtos GetPorId(int id) => _context.produtos.FirstOrDefault(c => c.Codigo_produto == id);
+        public async Task<Produtos> GetPorIdAsync(int id)
+        {
+            return await _context.produtos.FirstOrDefaultAsync(c => c.Codigo_produto == id);
+        }
 
-        public IEnumerable<Produtos> GetProdutos() => _context.produtos.ToList();
+        public async Task<IEnumerable<Produtos>> ListarProdutosAsync(int page, int pageSize)
+        {
+            return await _context.produtos
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<int> ObterTotalProdutosAsync()
+        {
+            return await _context.produtos.CountAsync();
+        }
 
         public async Task AdicionarProdutoAsync(Produtos produto)
         {
