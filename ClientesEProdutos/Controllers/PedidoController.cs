@@ -25,6 +25,9 @@ namespace ClientesEProdutos.Controllers
         [HttpPost("pre-pedido")]
         public async Task<IActionResult> CriarPrePedido([FromBody] PrePedido prePedido)
         {
+            var validacao = ValidarModelo();
+            if (validacao != null) return validacao;
+
             var novoPrePedido = await _pedidoRepository.CriarPrePedidoAsync(prePedido);
             return CreatedAtAction(nameof(CriarPrePedido), new { id = novoPrePedido.IdPrePedido }, novoPrePedido);
         }
@@ -49,11 +52,33 @@ namespace ClientesEProdutos.Controllers
         [HttpGet("{pedidoId}")]
         public async Task<IActionResult> ConsultarPedido(int pedidoId)
         {
+            var existencia = await VerificarExistenciaPedido(pedidoId);
+            if (existencia != null) return existencia;
+
             var pedido = await _pedidoRepository.ConsultarPedidoAsync(pedidoId);
             if (pedido == null)
                 return NotFound("Pedido não encontrado.");
 
             return Ok(pedido);
+        }
+
+        private async Task<IActionResult> VerificarExistenciaPedido(int pedidoId)
+        {
+            var pedido = await _pedidoRepository.ConsultarPedidoAsync(pedidoId);
+            if (pedido == null)
+            {
+                return NotFound($"Pedido com ID {pedidoId} não encontrado.");
+            }
+            return null; // Indica que o pedido existe
+        }
+
+        private IActionResult ValidarModelo()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return null;
         }
     }
 
