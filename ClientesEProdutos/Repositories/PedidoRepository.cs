@@ -1,6 +1,8 @@
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
+using ClientesEProdutos.Models;
 using ClientesEProdutos.Models.DTOs;
+using ProdutoDtoPedido = ClientesEProdutos.Models.DTOs.ProdutoDto;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,27 +58,48 @@ namespace ClientesEProdutos.Repositories
 
         public async Task<List<PedidoDto>> ListarPedidosAsync(int page, int pageSize)
         {
-            var pedidos = await _context.Pedidos
+            return await _context.Pedidos
                 .Include(p => p.PedidoProdutos)
                 .ThenInclude(pp => pp.Produto)
                 .Include(p => p.Cliente)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return await _context.Pedidos
                 .Select(p => new PedidoDto
                 {
                     IdPedido = p.IdPedido,
                     DataPedido = p.DataPedido,
                     ValorTotal = p.ValorTotal,
                     NomeCliente = p.Cliente.Nome_cliente,
-                    Produtos = p.PedidoProdutos.Select(pp => new ProdutoDto
+                    Produtos = p.PedidoProdutos.Select(pp => new ProdutoDtoPedido
                     {
                         CodigoProduto = pp.CodigoProduto,
                         NomeProduto = pp.Produto.Nome_produto,
                         ValorProduto = pp.Produto.ValorProduto,
                         Quantidade = pp.Quantidade
+                    }).ToList()
+                })
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<List<PrePedidoDto>> ListarPrePedidosAsync(int page, int pageSize)
+        {
+            return await _context.PrePedidos
+                .Include(pp => pp.PrePedidoProdutos)
+                .ThenInclude(ppp => ppp.Produto)
+                .Include(pp => pp.Cliente)
+                .Select(pp => new PrePedidoDto
+                {
+                    IdPrePedido = pp.IdPrePedido,
+                    // DataPedido = pp.DataPedido,
+                    CodigoCliente = pp.CodigoCliente,
+                    NomeCliente = pp.Cliente.Nome_cliente,
+                    EnderecoCliente = pp.Cliente.Endereco_cliente,
+                    Produtos = pp.PrePedidoProdutos.Select(ppp => new ProdutoDtoPedido
+                    {
+                        CodigoProduto = ppp.CodigoProduto,
+                        NomeProduto = ppp.Produto.Nome_produto,
+                        ValorProduto = ppp.Produto.ValorProduto,
+                        Quantidade = ppp.Quantidade
                     }).ToList()
                 })
                 .Skip((page - 1) * pageSize)
@@ -96,6 +119,11 @@ namespace ClientesEProdutos.Repositories
         public async Task<int> ObterTotalPedidosAsync()
         {
             return await _context.Pedidos.CountAsync();
+        }
+
+        public async Task<int> ObterTotalPrePedidosAsync()
+        {
+            return await _context.PrePedidos.CountAsync();
         }
     }
 }

@@ -57,6 +57,33 @@ namespace ClientesEProdutos.Controllers
             return Ok(resposta);
         }
 
+        [HttpGet("listar-pre-pedidos")]
+        public async Task<IActionResult> ListarPrePedidos([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            var totalRegistros = await _pedidoRepository.ObterTotalPrePedidosAsync();
+            var prePedidos = await _pedidoRepository.ListarPrePedidosAsync(page, pageSize);
+
+            if (prePedidos == null || !prePedidos.Any())
+            {
+                return NotFound("Nenhum pré-pedido encontrado.");
+            }
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                PrePedidos = prePedidos
+            };
+
+            return Ok(resposta);
+        }
+
         [HttpGet("{pedidoId}")]
         public async Task<IActionResult> ConsultarPedido(int pedidoId)
         {

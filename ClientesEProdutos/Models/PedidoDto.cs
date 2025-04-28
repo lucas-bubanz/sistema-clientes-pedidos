@@ -22,4 +22,14 @@ namespace ClientesEProdutos.Models.DTOs
         public decimal ValorProduto { get; set; }
         public int Quantidade { get; set; }
     }
+
+    public class PrePedidoDto
+    {
+        public int IdPrePedido { get; set; }
+        public DateTime DataPedido { get; set; }
+        public int CodigoCliente { get; set; }
+        public string NomeCliente { get; set; }
+        public string EnderecoCliente { get; set; }
+        public List<ProdutoDto> Produtos { get; set; }
+    }
 }
