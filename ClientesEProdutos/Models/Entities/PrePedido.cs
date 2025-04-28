@@ -43,5 +43,7 @@ namespace ClientesEProdutos.Models.Entities
 
         [Column("descricao_produto")]
         public string DescricaoProduto { get; set; }
+
+        public ICollection<PrePedidoProduto> PrePedidoProdutos { get; set; }
     }
 }
