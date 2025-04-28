@@ -32,7 +32,7 @@ namespace ClientesEProdutos.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Clientes?> GetClientePorId(int id)
+        public async Task<Clientes> GetClientePorId(int id)
         {
             return await _context.clientes.FirstOrDefaultAsync(i => i.Codigo_cliente == id);
         }

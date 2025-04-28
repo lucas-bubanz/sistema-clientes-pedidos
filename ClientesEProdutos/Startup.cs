@@ -27,9 +27,14 @@ namespace ClientesEProdutos.Startup
 
             services.AddScoped<IProdutoRepository, ProdutoRepository>();
             services.AddScoped<IClienteRepository, ClienteRepository>();
+            services.AddScoped<IPedidoRepository, PedidoRepository>();
 
             // Adiciona suporte a controladores
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+                });
         }
 
         // Configura o pipeline de requisição HTTP
