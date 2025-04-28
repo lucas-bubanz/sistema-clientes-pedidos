@@ -37,9 +37,12 @@ namespace ClientesEProdutos.Repositories
             return await _context.clientes.FirstOrDefaultAsync(i => i.Codigo_cliente == id);
         }
 
-        public async Task<IEnumerable<Clientes>> GetClientesAsync(int page, int pageSize)
+        public async Task<IEnumerable<Clientes>> ListarClientesAsync(int page, int pageSize)
         {
-            return await _context.clientes.ToListAsync();
+            return await _context.clientes
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
         }
 
         public async Task RemoverClienteAsync(int id)
@@ -47,6 +50,11 @@ namespace ClientesEProdutos.Repositories
             var cliente = await _context.clientes.FirstOrDefaultAsync(i => i.Codigo_cliente == id);
             if (cliente != null) _context.clientes.Remove(cliente);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> ObterTotalClientesAsync()
+        {
+            return await _context.clientes.CountAsync();
         }
     }
 }

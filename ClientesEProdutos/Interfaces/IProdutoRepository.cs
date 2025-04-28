@@ -8,10 +8,11 @@ namespace ClientesEProdutos.Interfaces
 {
     public interface IProdutoRepository
     {
-        IEnumerable<Produtos> GetProdutos();
+        Task<IEnumerable<Produtos>> ListarProdutosAsync(int page, int pageSize);
         Task<Produtos> GetPorIdAsync(int id);
         Task AdicionarProdutoAsync(Produtos produto);
         Task AtualizarProdutoAsync(Produtos produto);
         Task RemoverProdutoAsync(int id);
+        Task<int> ObterTotalProdutosAsync();
     }
 }

@@ -25,7 +25,18 @@ namespace ClientesEProdutos.Controllers
                 return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
             }
 
-            return Ok(await _repository.GetClientesAsync(page, pageSize));
+            var totalRegistros = await _repository.ObterTotalClientesAsync();
+            var clientes = await _repository.ListarClientesAsync(page, pageSize);
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                Clientes = clientes
+            };
+
+            return Ok(resposta);
         }
 
         [HttpGet]

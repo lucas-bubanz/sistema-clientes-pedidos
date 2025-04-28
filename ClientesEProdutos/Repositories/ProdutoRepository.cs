@@ -23,7 +23,18 @@ namespace ClientesEProdutos.Repositories
             return await _context.produtos.FirstOrDefaultAsync(c => c.Codigo_produto == id);
         }
 
-        public IEnumerable<Produtos> GetProdutos() => _context.produtos.ToList();
+        public async Task<IEnumerable<Produtos>> ListarProdutosAsync(int page, int pageSize)
+        {
+            return await _context.produtos
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<int> ObterTotalProdutosAsync()
+        {
+            return await _context.produtos.CountAsync();
+        }
 
         public async Task AdicionarProdutoAsync(Produtos produto)
         {

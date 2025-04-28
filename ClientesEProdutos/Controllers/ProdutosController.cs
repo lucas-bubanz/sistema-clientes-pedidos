@@ -25,7 +25,26 @@ namespace ClientesEProdutos.Controllers
 
         [HttpGet]
         [Route("todosProdutos")]
-        public IActionResult Get() => Ok(_repository.GetProdutos());
+        public async Task<IActionResult> ListarProdutos([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            var totalRegistros = await _repository.ObterTotalProdutosAsync();
+            var produtos = await _repository.ListarProdutosAsync(page, pageSize);
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                Produtos = produtos
+            };
+
+            return Ok(resposta);
+        }
 
         [HttpGet]
         [Route("produtosId/{id}")]
