@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
+using ClientesEProdutos.Models.DTOs;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,13 +58,30 @@ namespace ClientesEProdutos.Repositories
             return pedido;
         }
 
-        public async Task<List<Pedido>> ListarPedidosAsync()
+        public async Task<List<PedidoDto>> ListarPedidosAsync()
         {
-            return await _context.Pedidos
-                .Include(p => p.PedidoProdutos)
-                .ThenInclude(pp => pp.Produto)
-                .Include(p => p.Cliente)
-                .ToListAsync();
+            var pedidos = await _context.Pedidos
+                    .Include(p => p.PedidoProdutos)
+                    .ThenInclude(pp => pp.Produto)
+                    .Include(p => p.Cliente)
+                    .ToListAsync();
+
+            return pedidos.Select(p => new PedidoDto
+            {
+                IdPedido = p.IdPedido,
+                DataPedido = p.DataPedido,
+                ValorTotal = p.ValorTotal,
+                CodigoCliente = p.CodigoCliente,
+                NomeCliente = p.Cliente.Nome_cliente,
+                EnderecoCliente = p.Cliente.Endereco_cliente,
+                Produtos = p.PedidoProdutos.Select(pp => new ProdutoDto
+                {
+                    CodigoProduto = pp.CodigoProduto,
+                    NomeProduto = pp.Produto.Nome_produto,
+                    ValorProduto = pp.Produto.ValorProduto,
+                    Quantidade = pp.Quantidade
+                }).ToList()
+            }).ToList();
         }
 
         public async Task<Pedido> ConsultarPedidoAsync(int pedidoId)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClientesEProdutos.Models.DTOs;
 using ClientesEProdutos.Models.Entities;
 
 namespace ClientesEProdutos.Interfaces
@@ -10,7 +11,7 @@ namespace ClientesEProdutos.Interfaces
     {
         Task<PrePedido> CriarPrePedidoAsync(PrePedido prePedido);
         Task<Pedido> ConfirmarPrePedidoAsync(int prePedidoId);
-        Task<List<Pedido>> ListarPedidosAsync();
+        Task<List<PedidoDto>> ListarPedidosAsync();
         Task<Pedido> ConsultarPedidoAsync(int pedidoId);
     }
 }
