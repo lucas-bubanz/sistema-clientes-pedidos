@@ -64,22 +64,24 @@ namespace ClientesEProdutos.Repositories
                 .Take(pageSize)
                 .ToListAsync();
 
-            return pedidos.Select(p => new PedidoDto
-            {
-                IdPedido = p.IdPedido,
-                DataPedido = p.DataPedido,
-                ValorTotal = p.ValorTotal,
-                CodigoCliente = p.CodigoCliente,
-                NomeCliente = p.Cliente.Nome_cliente,
-                EnderecoCliente = p.Cliente.Endereco_cliente,
-                Produtos = p.PedidoProdutos.Select(pp => new ProdutoDto
+            return await _context.Pedidos
+                .Select(p => new PedidoDto
                 {
-                    CodigoProduto = pp.CodigoProduto,
-                    NomeProduto = pp.Produto.Nome_produto,
-                    ValorProduto = pp.Produto.ValorProduto,
-                    Quantidade = pp.Quantidade
-                }).ToList()
-            }).ToList();
+                    IdPedido = p.IdPedido,
+                    DataPedido = p.DataPedido,
+                    ValorTotal = p.ValorTotal,
+                    NomeCliente = p.Cliente.Nome_cliente,
+                    Produtos = p.PedidoProdutos.Select(pp => new ProdutoDto
+                    {
+                        CodigoProduto = pp.CodigoProduto,
+                        NomeProduto = pp.Produto.Nome_produto,
+                        ValorProduto = pp.Produto.ValorProduto,
+                        Quantidade = pp.Quantidade
+                    }).ToList()
+                })
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public async Task<Pedido> ConsultarPedidoAsync(int pedidoId)
