@@ -35,6 +35,23 @@ namespace ClientesEProdutos.Startup
                 {
                     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
                 });
+
+            // Configurar o Swagger    
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "API de Cadastro para Clientes, Produtos e Pedidos v1",
+                    Version = "v1",
+                    Description = "API para gerenciar clientes, produtos e pedidos.",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Lucas Gabriel Bubanz",
+                        Email = "lucas.bubanz@herval.co,.br",
+                        Url = new Uri("https://github.com/lucas-bubanz")
+                    }
+                });
+            });
         }
 
         // Configura o pipeline de requisição HTTP
@@ -44,6 +61,13 @@ namespace ClientesEProdutos.Startup
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Cadastro v1");
+                c.RoutePrefix = string.Empty; // Exibe o Swagger na raiz (http://localhost:<porta>/)
+            });
 
             app.UseHttpsRedirection();
 
