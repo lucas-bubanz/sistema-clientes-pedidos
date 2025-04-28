@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
-using ClientesEProdutos.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ClientesEProdutos.Controllers
 {

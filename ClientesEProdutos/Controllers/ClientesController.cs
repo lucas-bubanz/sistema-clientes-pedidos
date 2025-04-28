@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using ClientesEProdutos.Interfaces;
-using System.Threading.Tasks;
 using ClientesEProdutos.Models.Entities;
 
 namespace ClientesEProdutos.Controllers
@@ -43,7 +42,7 @@ namespace ClientesEProdutos.Controllers
         [Route("listarClientePorId/{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var cliente = await _repository.GetClientePorId(id);
+            var cliente = await _repository.ListarClientePorIdAsync(id);
             if (cliente == null) return NotFound(id);
             return Ok(cliente);
         }
@@ -97,7 +96,7 @@ namespace ClientesEProdutos.Controllers
 
         private async Task<IActionResult> VerificarExistenciaCliente(int id)
         {
-            var cliente = await _repository.GetClientePorId(id);
+            var cliente = await _repository.ListarClientePorIdAsync(id);
             if (cliente == null)
             {
                 return NotFound($"Cliente com ID {id} não encontrado.");

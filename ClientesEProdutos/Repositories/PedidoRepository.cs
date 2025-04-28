@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.DTOs;

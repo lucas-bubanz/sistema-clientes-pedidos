@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace ClientesEProdutos.Models.DTOs
 {
     public class PedidoDto

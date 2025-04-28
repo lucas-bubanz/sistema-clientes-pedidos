@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientesEProdutos.Repositories
