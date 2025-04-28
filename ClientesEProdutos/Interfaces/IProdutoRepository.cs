@@ -1,10 +1,11 @@
+using ClientesEProdutos.Models;
 using ClientesEProdutos.Models.Entities;
 
 namespace ClientesEProdutos.Interfaces
 {
     public interface IProdutoRepository
     {
-        Task<IEnumerable<Produtos>> ListarProdutosAsync(int page, int pageSize);
+        Task<IEnumerable<ProdutoDto>> ListarProdutosAsync(int page, int pageSize);
         Task<Produtos> GetPorIdAsync(int id);
         Task AdicionarProdutoAsync(Produtos produto);
         Task AtualizarProdutoAsync(Produtos produto);

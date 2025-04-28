@@ -1,5 +1,6 @@
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
+using ClientesEProdutos.Models;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,12 +32,18 @@ namespace ClientesEProdutos.Repositories
             return await _context.clientes.FirstOrDefaultAsync(i => i.Codigo_cliente == id);
         }
 
-        public async Task<IEnumerable<Clientes>> ListarClientesAsync(int page, int pageSize)
+        public async Task<IEnumerable<ClienteDto>> ListarClientesAsync(int page, int pageSize)
         {
             return await _context.clientes
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+                    .Select(c => new ClienteDto
+                    {
+                        CodigoCliente = c.Codigo_cliente,
+                        NomeCliente = c.Nome_cliente,
+                        EnderecoCliente = c.Endereco_cliente
+                    })
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
         }
 
         public async Task RemoverClienteAsync(int id)

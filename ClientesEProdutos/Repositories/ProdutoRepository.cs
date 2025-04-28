@@ -1,5 +1,6 @@
 using ApplicationDBContext.Data;
 using ClientesEProdutos.Interfaces;
+using ClientesEProdutos.Models;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,9 +20,16 @@ namespace ClientesEProdutos.Repositories
             return await _context.produtos.FirstOrDefaultAsync(c => c.Codigo_produto == id);
         }
 
-        public async Task<IEnumerable<Produtos>> ListarProdutosAsync(int page, int pageSize)
+        public async Task<IEnumerable<ProdutoDto>> ListarProdutosAsync(int page, int pageSize)
         {
             return await _context.produtos
+                .Select(p => new ProdutoDto
+                {
+                    CodigoProduto = p.Codigo_produto,
+                    NomeProduto = p.Nome_produto,
+                    DescricaoProduto = p.DescricaoProduto,
+                    ValorProduto = p.ValorProduto
+                })
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
