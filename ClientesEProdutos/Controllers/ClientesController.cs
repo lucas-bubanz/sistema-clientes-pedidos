@@ -36,6 +36,9 @@ namespace ClientesEProdutos.Controllers
         [Route("adicionarCliente")]
         public async Task<IActionResult> PostAsync([FromBody] Clientes clientes)
         {
+            var validacao = ValidarModelo();
+            if (validacao != null) return validacao;
+
             await _repository.AdicionarCleinteAsync(clientes);
             return Created();
         }
@@ -44,7 +47,14 @@ namespace ClientesEProdutos.Controllers
         [Route("atualizarCliente/{id}")]
         public async Task<IActionResult> PutAsync(int id, [FromBody] Clientes clientes)
         {
-            if (id != clientes.Codigo_cliente) return BadRequest();
+            var validacao = ValidarModelo();
+            if (validacao != null) return validacao;
+
+            if (id != clientes.Codigo_cliente) return BadRequest("O ID fornecido não corresponde ao cliente.");
+
+            var existencia = await VerificarExistenciaCliente(id);
+            if (existencia != null) return existencia;
+
             await _repository.AtualizarClienteAsync(clientes);
             return NoContent();
         }
@@ -53,10 +63,30 @@ namespace ClientesEProdutos.Controllers
         [Route("removerCliente/{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var clienteExistente = await _repository.GetClientePorId(id);
-            if (clienteExistente == null) return NotFound();
+            var existencia = await VerificarExistenciaCliente(id);
+            if (existencia != null) return existencia;
+
             await _repository.RemoverClienteAsync(id);
             return NoContent();
+        }
+
+        private IActionResult ValidarModelo()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return null;
+        }
+
+        private async Task<IActionResult> VerificarExistenciaCliente(int id)
+        {
+            var cliente = await _repository.GetClientePorId(id);
+            if (cliente == null)
+            {
+                return NotFound($"Cliente com ID {id} não encontrado.");
+            }
+            return null;
         }
     }
 }
