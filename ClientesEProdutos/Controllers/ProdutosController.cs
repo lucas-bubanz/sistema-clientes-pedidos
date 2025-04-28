@@ -34,7 +34,7 @@ namespace ClientesEProdutos.Controllers
             var existencia = await VerificarExistenciaProduto(id);
             if (existencia != null) return existencia;
 
-            var produto = await _repository.GetPorId(id);
+            var produto = await _repository.GetPorIdAsync(id);
             if (produto == null) return NotFound();
             return Ok(produto);
         }
@@ -88,7 +88,7 @@ namespace ClientesEProdutos.Controllers
 
         private async Task<IActionResult> VerificarExistenciaProduto(int id)
         {
-            var produto = await _repository.GetPorId(id);
+            var produto = await _repository.GetPorIdAsync(id);
             if (produto == null)
             {
                 return NotFound($"Produto com ID {id} não encontrado.");

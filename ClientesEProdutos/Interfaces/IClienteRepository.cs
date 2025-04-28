@@ -8,7 +8,7 @@ namespace ClientesEProdutos.Interfaces
 {
     public interface IClienteRepository
     {
-        Task<IEnumerable<Clientes>> GetClientes();
+        Task<IEnumerable<Clientes>> GetClientesAsync(int page, int pageSize);
         Task<Clientes> GetClientePorId(int id);
         Task AdicionarCleinteAsync(Clientes cliente);
         Task AtualizarClienteAsync(Clientes cliente);

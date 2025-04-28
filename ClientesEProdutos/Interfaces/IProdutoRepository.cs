@@ -9,7 +9,7 @@ namespace ClientesEProdutos.Interfaces
     public interface IProdutoRepository
     {
         IEnumerable<Produtos> GetProdutos();
-        Task<Produtos> GetPorId(int id);
+        Task<Produtos> GetPorIdAsync(int id);
         Task AdicionarProdutoAsync(Produtos produto);
         Task AtualizarProdutoAsync(Produtos produto);
         Task RemoverProdutoAsync(int id);

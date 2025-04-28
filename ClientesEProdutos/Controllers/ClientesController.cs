@@ -18,9 +18,14 @@ namespace ClientesEProdutos.Controllers
 
         [HttpGet]
         [Route("listarClientes")]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            return Ok(await _repository.GetClientes());
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            return Ok(await _repository.GetClientesAsync(page, pageSize));
         }
 
         [HttpGet]

@@ -58,13 +58,15 @@ namespace ClientesEProdutos.Repositories
             return pedido;
         }
 
-        public async Task<List<PedidoDto>> ListarPedidosAsync()
+        public async Task<List<PedidoDto>> ListarPedidosAsync(int page, int pageSize)
         {
             var pedidos = await _context.Pedidos
-                    .Include(p => p.PedidoProdutos)
-                    .ThenInclude(pp => pp.Produto)
-                    .Include(p => p.Cliente)
-                    .ToListAsync();
+                .Include(p => p.PedidoProdutos)
+                .ThenInclude(pp => pp.Produto)
+                .Include(p => p.Cliente)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             return pedidos.Select(p => new PedidoDto
             {
@@ -91,6 +93,11 @@ namespace ClientesEProdutos.Repositories
                 .ThenInclude(pp => pp.Produto)
                 .Include(p => p.Cliente)
                 .FirstOrDefaultAsync(p => p.IdPedido == pedidoId);
+        }
+
+        public async Task<int> ObterTotalPedidosAsync()
+        {
+            return await _context.Pedidos.CountAsync();
         }
     }
 }

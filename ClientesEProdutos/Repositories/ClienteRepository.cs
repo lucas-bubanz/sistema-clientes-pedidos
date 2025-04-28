@@ -37,7 +37,7 @@ namespace ClientesEProdutos.Repositories
             return await _context.clientes.FirstOrDefaultAsync(i => i.Codigo_cliente == id);
         }
 
-        public async Task<IEnumerable<Clientes>> GetClientes()
+        public async Task<IEnumerable<Clientes>> GetClientesAsync(int page, int pageSize)
         {
             return await _context.clientes.ToListAsync();
         }

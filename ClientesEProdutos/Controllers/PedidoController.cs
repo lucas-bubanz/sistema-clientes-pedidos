@@ -43,10 +43,25 @@ namespace ClientesEProdutos.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListarPedidos()
+        public async Task<IActionResult> ListarPedidos([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var pedidos = await _pedidoRepository.ListarPedidosAsync();
-            return Ok(pedidos);
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            var totalRegistros = await _pedidoRepository.ObterTotalPedidosAsync();
+            var pedidos = await _pedidoRepository.ListarPedidosAsync(page, pageSize);
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                Pedidos = pedidos
+            };
+
+            return Ok(resposta);
         }
 
         [HttpGet("{pedidoId}")]
