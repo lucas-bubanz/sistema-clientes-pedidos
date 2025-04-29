@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientesEProdutos.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/[controller]")]
     public class PedidoController : Controller
     {
         private readonly IPedidoRepository _pedidoRepository;
