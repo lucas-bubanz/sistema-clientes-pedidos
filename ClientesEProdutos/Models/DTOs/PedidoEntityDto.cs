@@ -1,6 +1,6 @@
 namespace ClientesEProdutos.Models.DTOs
 {
-    public class PedidoDto
+    public class PedidoEntityDto
     {
         public int IdPedido { get; set; }
         public DateTime DataPedido { get; set; }

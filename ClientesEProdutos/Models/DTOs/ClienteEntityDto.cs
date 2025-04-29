@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace ClientesEProdutos.Models
 {
-    public class ClienteDto
+    public class ClienteEntityDto
     {
         public int CodigoCliente { get; set; }
         public string NomeCliente { get; set; }

@@ -5,7 +5,7 @@ namespace ClientesEProdutos.Interfaces
 {
     public interface IClienteRepository
     {
-        Task<IEnumerable<ClienteDto>> ListarClientesAsync(int page, int pageSize);
+        Task<IEnumerable<ClienteEntityDto>> ListarClientesAsync(int page, int pageSize);
         Task<Clientes> ListarClientePorIdAsync(int id);
         Task AdicionarCleinteAsync(Clientes cliente);
         Task AtualizarClienteAsync(Clientes cliente);

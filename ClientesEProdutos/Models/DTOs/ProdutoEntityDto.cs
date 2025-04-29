@@ -1,6 +1,6 @@
 namespace ClientesEProdutos.Models
 {
-    public class ProdutoDto
+    public class ProdutoEntityDto
     {
         public int CodigoProduto { get; set; }
         public string NomeProduto { get; set; }

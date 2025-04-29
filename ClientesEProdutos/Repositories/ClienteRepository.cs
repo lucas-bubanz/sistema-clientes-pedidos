@@ -34,10 +34,10 @@ namespace ClientesEProdutos.Repositories
                 .FirstOrDefaultAsync(c => c.Codigo_cliente == id);
         }
 
-        public async Task<IEnumerable<ClienteDto>> ListarClientesAsync(int page, int pageSize)
+        public async Task<IEnumerable<ClienteEntityDto>> ListarClientesAsync(int page, int pageSize)
         {
             return await _context.clientes
-                    .Select(c => new ClienteDto
+                    .Select(c => new ClienteEntityDto
                     {
                         CodigoCliente = c.Codigo_cliente,
                         NomeCliente = c.Nome_cliente,

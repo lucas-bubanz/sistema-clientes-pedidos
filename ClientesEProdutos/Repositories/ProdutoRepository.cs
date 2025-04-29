@@ -1,4 +1,5 @@
 using ApplicationDBContext.Data;
+using AutoMapper;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models;
 using ClientesEProdutos.Models.Entities;
@@ -9,10 +10,12 @@ namespace ClientesEProdutos.Repositories
     public class ProdutoRepository : IProdutoRepository
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ProdutoRepository(AppDbContext context)
+        public ProdutoRepository(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<Produtos> GetPorIdAsync(int id)
@@ -20,19 +23,14 @@ namespace ClientesEProdutos.Repositories
             return await _context.produtos.FirstOrDefaultAsync(c => c.Codigo_produto == id);
         }
 
-        public async Task<IEnumerable<ProdutoDto>> ListarProdutosAsync(int page, int pageSize)
+        public async Task<IEnumerable<ProdutoEntityDto>> ListarProdutosAsync(int page, int pageSize)
         {
-            return await _context.produtos
-                .Select(p => new ProdutoDto
-                {
-                    CodigoProduto = p.Codigo_produto,
-                    NomeProduto = p.Nome_produto,
-                    DescricaoProduto = p.DescricaoProduto,
-                    ValorProduto = p.ValorProduto
-                })
+            var produtos = await _context.produtos
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ProdutoEntityDto>>(produtos);
         }
 
         public async Task<int> ObterTotalProdutosAsync()

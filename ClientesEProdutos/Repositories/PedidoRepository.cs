@@ -6,15 +6,18 @@ using ProdutoDtoPedido = ClientesEProdutos.Models.DTOs.ProdutoDto;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using AutoMapper;
 
 namespace ClientesEProdutos.Repositories
 {
     public class PedidoRepository : IPedidoRepository
     {
         private readonly AppDbContext _context;
-        public PedidoRepository(AppDbContext context)
+        private readonly IMapper _mapper;
+        public PedidoRepository(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<PrePedido> CriarPrePedidoAsync(PrePedido prePedido)
@@ -55,29 +58,17 @@ namespace ClientesEProdutos.Repositories
             return pedido;
         }
 
-        public async Task<List<PedidoDto>> ListarPedidosAsync(int page, int pageSize)
+        public async Task<List<PedidoEntityDto>> ListarPedidosAsync(int page, int pageSize)
         {
-            return await _context.Pedidos
+            var pedidos = await _context.Pedidos
                 .Include(p => p.PedidoProdutos)
                 .ThenInclude(pp => pp.Produto)
                 .Include(p => p.Cliente)
-                .Select(p => new PedidoDto
-                {
-                    IdPedido = p.IdPedido,
-                    DataPedido = p.DataPedido,
-                    ValorTotal = p.ValorTotal,
-                    NomeCliente = p.Cliente.Nome_cliente,
-                    Produtos = p.PedidoProdutos.Select(pp => new ProdutoDtoPedido
-                    {
-                        CodigoProduto = pp.CodigoProduto,
-                        NomeProduto = pp.Produto.Nome_produto,
-                        ValorProduto = pp.Produto.ValorProduto,
-                        Quantidade = pp.Quantidade
-                    }).ToList()
-                })
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
+            return _mapper.Map<List<PedidoEntityDto>>(pedidos);
         }
 
         public async Task<List<PrePedidoDto>> ListarPrePedidosAsync(int page, int pageSize)
@@ -138,14 +129,14 @@ namespace ClientesEProdutos.Repositories
             return pedido;
         }
 
-        public async Task<PrePedidoPorIdDto> ConsultarPrePedidoAsync(int prePedidoId)
+        public async Task<PrePedidoEntityDto> ConsultarPrePedidoAsync(int prePedidoId)
         {
             return await _context.PrePedidos
                 .Include(pp => pp.PrePedidoProdutos)
                 .ThenInclude(ppp => ppp.Produto)
                 .Include(pp => pp.Cliente)
                 .Where(pp => pp.IdPrePedido == prePedidoId)
-                .Select(pp => new PrePedidoPorIdDto
+                .Select(pp => new PrePedidoEntityDto
                 {
                     IdPrePedido = pp.IdPrePedido,
                     CodigoCliente = pp.CodigoCliente,

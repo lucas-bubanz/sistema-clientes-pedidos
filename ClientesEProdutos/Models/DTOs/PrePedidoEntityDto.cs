@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ClientesEProdutos.Models
 {
-    public class PrePedidoPorIdDto
+    public class PrePedidoEntityDto
     {
         public int IdPrePedido { get; set; }
         public int CodigoCliente { get; set; }

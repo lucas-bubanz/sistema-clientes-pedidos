@@ -29,6 +29,8 @@ namespace ClientesEProdutos.Startup
             services.AddScoped<IClienteRepository, ClienteRepository>();
             services.AddScoped<IPedidoRepository, PedidoRepository>();
 
+            services.AddAutoMapper(typeof(Startup));
+
             // Adiciona suporte a controladores
             services.AddControllers()
                 .AddJsonOptions(options =>
