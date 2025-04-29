@@ -13,7 +13,7 @@ namespace ClientesEProdutos.Interfaces
         Task<List<PedidoDto>> ListarPedidosAsync(int page, int pageSize);
         Task<List<PrePedidoDto>> ListarPrePedidosAsync(int page, int pageSize);
         Task<Pedido> ConsultarPedidoAsync(int pedidoId);
-        Task<PrePedido> ConsultarPrePedidoAsync(int prePedidoId);
+        Task<PrePedidoPorIdDto> ConsultarPrePedidoAsync(int prePedidoId);
         Task<int> ObterTotalPedidosAsync();
         Task<int> ObterTotalPrePedidosAsync();
     }

@@ -48,9 +48,7 @@ namespace ClientesEProdutos.Repositories
             };
 
             _context.Pedidos.Add(pedido);
-
             _context.PrePedidos.Remove(prePedido);
-
             _context.Remove(prePedido);
 
             await _context.SaveChangesAsync();
@@ -91,7 +89,6 @@ namespace ClientesEProdutos.Repositories
                 .Select(pp => new PrePedidoDto
                 {
                     IdPrePedido = pp.IdPrePedido,
-                    // DataPedido = pp.DataPedido,
                     CodigoCliente = pp.CodigoCliente,
                     NomeCliente = pp.Cliente.Nome_cliente,
                     EnderecoCliente = pp.Cliente.Endereco_cliente,
@@ -141,9 +138,28 @@ namespace ClientesEProdutos.Repositories
             return pedido;
         }
 
-        public async Task<PrePedido> ConsultarPrePedidoAsync(int prePedidoId)
+        public async Task<PrePedidoPorIdDto> ConsultarPrePedidoAsync(int prePedidoId)
         {
-            return await _context.PrePedidos.FirstOrDefaultAsync(p => p.IdPrePedido == prePedidoId);
+            return await _context.PrePedidos
+                .Include(pp => pp.PrePedidoProdutos)
+                .ThenInclude(ppp => ppp.Produto)
+                .Include(pp => pp.Cliente)
+                .Where(pp => pp.IdPrePedido == prePedidoId)
+                .Select(pp => new PrePedidoPorIdDto
+                {
+                    IdPrePedido = pp.IdPrePedido,
+                    CodigoCliente = pp.CodigoCliente,
+                    NomeCliente = pp.Cliente.Nome_cliente,
+                    EnderecoCliente = pp.Cliente.Endereco_cliente,
+                    Produtos = pp.PrePedidoProdutos.Select(ppp => new ProdutoPrePedidoDto
+                    {
+                        CodigoProduto = ppp.CodigoProduto,
+                        NomeProduto = ppp.Produto.Nome_produto,
+                        ValorProduto = ppp.Produto.ValorProduto,
+                        Quantidade = ppp.Quantidade
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<int> ObterTotalPedidosAsync()
