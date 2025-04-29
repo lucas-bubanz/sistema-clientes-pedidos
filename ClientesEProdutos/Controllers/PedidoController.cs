@@ -44,8 +44,20 @@ namespace ClientesEProdutos.Controllers
             var existenciaPedido = await VerificarExistenciaPrePedido(prePedidoId);
             if (existenciaPedido != null) return existenciaPedido;
 
-            await _pedidoRepository.CancelarPrePedidoAsync(prePedidoId);
-            return Ok();
+            return Ok(await _pedidoRepository.CancelarPrePedidoAsync(prePedidoId));
+        }
+
+        [HttpDelete("cancelar-pedido/{idPedido}")]
+        public async Task<IActionResult> CancelarPedido(int idPedido)
+        {
+            var validacao = await ValidarModelo();
+            if (validacao != null) return validacao;
+
+            var existenciaPedido = await VerificarExistenciaPedido(idPedido);
+            if (existenciaPedido != null) return existenciaPedido;
+
+            // await _pedidoRepository.CancelarPedidoAsync(idPedido);
+            return Ok(await _pedidoRepository.CancelarPedidoAsync(idPedido));
         }
 
         [HttpGet]

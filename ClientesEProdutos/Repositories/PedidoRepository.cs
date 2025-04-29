@@ -144,9 +144,16 @@ namespace ClientesEProdutos.Repositories
             return prePedido;
         }
 
-        public Task<Pedido> CancelarPedido(int idPedido)
+        public async Task<Pedido> CancelarPedidoAsync(int idPedido)
         {
-            throw new NotImplementedException();
+            var pedido = await _context.Pedidos.FirstOrDefaultAsync(p => p.IdPedido == idPedido);
+
+            if (pedido == null) { }
+
+            _context.Remove(pedido);
+            await _context.SaveChangesAsync();
+
+            return pedido;
         }
     }
 }
