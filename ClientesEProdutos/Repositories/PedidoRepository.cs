@@ -5,6 +5,7 @@ using ClientesEProdutos.Models.DTOs;
 using ProdutoDtoPedido = ClientesEProdutos.Models.DTOs.ProdutoDto;
 using ClientesEProdutos.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ClientesEProdutos.Repositories
 {
@@ -116,6 +117,11 @@ namespace ClientesEProdutos.Repositories
                 .FirstOrDefaultAsync(p => p.IdPedido == pedidoId);
         }
 
+        public async Task<PrePedido> ConsultarPrePedidoAsync(int prePedidoId)
+        {
+            return await _context.PrePedidos.FirstOrDefaultAsync(p => p.IdPrePedido == prePedidoId);
+        }
+
         public async Task<int> ObterTotalPedidosAsync()
         {
             return await _context.Pedidos.CountAsync();
@@ -124,6 +130,23 @@ namespace ClientesEProdutos.Repositories
         public async Task<int> ObterTotalPrePedidosAsync()
         {
             return await _context.PrePedidos.CountAsync();
+        }
+
+        public async Task<PrePedido> CancelarPrePedidoAsync(int prePedidoId)
+        {
+            var prePedido = await _context.PrePedidos.FirstOrDefaultAsync(p => p.IdPrePedido == prePedidoId);
+
+            if (prePedido == null) { }
+
+            _context.Remove(prePedido);
+            await _context.SaveChangesAsync();
+
+            return prePedido;
+        }
+
+        public Task<Pedido> CancelarPedido(int idPedido)
+        {
+            throw new NotImplementedException();
         }
     }
 }
