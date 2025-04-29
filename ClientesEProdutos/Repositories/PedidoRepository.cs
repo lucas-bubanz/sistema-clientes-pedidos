@@ -117,21 +117,6 @@ namespace ClientesEProdutos.Repositories
                 .FirstOrDefaultAsync(p => p.IdPedido == pedidoId);
         }
 
-        public async Task<PrePedido> ConsultarPrePedidoAsync(int prePedidoId)
-        {
-            return await _context.PrePedidos.FirstOrDefaultAsync(p => p.IdPrePedido == prePedidoId);
-        }
-
-        public async Task<int> ObterTotalPedidosAsync()
-        {
-            return await _context.Pedidos.CountAsync();
-        }
-
-        public async Task<int> ObterTotalPrePedidosAsync()
-        {
-            return await _context.PrePedidos.CountAsync();
-        }
-
         public async Task<PrePedido> CancelarPrePedidoAsync(int prePedidoId)
         {
             var prePedido = await _context.PrePedidos.FirstOrDefaultAsync(p => p.IdPrePedido == prePedidoId);
@@ -155,5 +140,21 @@ namespace ClientesEProdutos.Repositories
 
             return pedido;
         }
+
+        public async Task<PrePedido> ConsultarPrePedidoAsync(int prePedidoId)
+        {
+            return await _context.PrePedidos.FirstOrDefaultAsync(p => p.IdPrePedido == prePedidoId);
+        }
+
+        public async Task<int> ObterTotalPedidosAsync()
+        {
+            return await _context.Pedidos.CountAsync();
+        }
+
+        public async Task<int> ObterTotalPrePedidosAsync()
+        {
+            return await _context.PrePedidos.CountAsync();
+        }
+
     }
 }

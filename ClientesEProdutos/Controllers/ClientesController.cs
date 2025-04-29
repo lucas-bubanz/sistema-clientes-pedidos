@@ -5,7 +5,7 @@ using ClientesEProdutos.Models.Entities;
 namespace ClientesEProdutos.Controllers
 {
     [ApiController]
-    [Route("v1")]
+    [Route("v1/[controller]")]
     public class ClientesController : Controller
     {
         private readonly IClienteRepository _repository;
@@ -15,8 +15,8 @@ namespace ClientesEProdutos.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        [Route("listarClientes")]
+        [HttpGet("listarClientes")]
+        // [Route("listarClientes")]
         public async Task<IActionResult> GetAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page <= 0 || pageSize <= 0)
@@ -38,8 +38,8 @@ namespace ClientesEProdutos.Controllers
             return Ok(resposta);
         }
 
-        [HttpGet]
-        [Route("listarClientePorId/{id}")]
+        [HttpGet("listarClientePorId/{id}")]
+        // [Route("listarClientePorId/{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
             var cliente = await _repository.ListarClientePorIdAsync(id);
@@ -47,22 +47,22 @@ namespace ClientesEProdutos.Controllers
             return Ok(cliente);
         }
 
-        [HttpPost]
-        [Route("adicionarCliente")]
+        [HttpPost("adicionarCliente")]
+        // [Route("adicionarCliente")]
         public async Task<IActionResult> PostAsync([FromBody] Clientes clientes)
         {
-            var validacao = ValidarModelo();
+            var validacao = await ValidarModelo();
             if (validacao != null) return validacao;
 
             await _repository.AdicionarCleinteAsync(clientes);
             return Created();
         }
 
-        [HttpPut]
-        [Route("atualizarCliente/{id}")]
+        [HttpPut("atualizarCliente/{id}")]
+        // [Route("atualizarCliente/{id}")]
         public async Task<IActionResult> PutAsync(int id, [FromBody] Clientes clientes)
         {
-            var validacao = ValidarModelo();
+            var validacao = await ValidarModelo();
             if (validacao != null) return validacao;
 
             if (id != clientes.Codigo_cliente) return BadRequest("O ID fornecido não corresponde ao cliente.");
@@ -74,8 +74,8 @@ namespace ClientesEProdutos.Controllers
             return NoContent();
         }
 
-        [HttpDelete]
-        [Route("removerCliente/{id}")]
+        [HttpDelete("removerCliente/{id}")]
+        // [Route("removerCliente/{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var existencia = await VerificarExistenciaCliente(id);
@@ -85,13 +85,13 @@ namespace ClientesEProdutos.Controllers
             return NoContent();
         }
 
-        private IActionResult ValidarModelo()
+        private Task<IActionResult> ValidarModelo()
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return Task.FromResult<IActionResult>(BadRequest(ModelState));
             }
-            return null;
+            return Task.FromResult<IActionResult>(null);
         }
 
         private async Task<IActionResult> VerificarExistenciaCliente(int id)

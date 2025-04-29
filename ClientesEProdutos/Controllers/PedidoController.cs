@@ -15,52 +15,7 @@ namespace ClientesEProdutos.Controllers
             _pedidoRepository = pedidoRepository;
         }
 
-        [HttpPost("pre-pedido")]
-        public async Task<IActionResult> CriarPrePedido([FromBody] PrePedido prePedido)
-        {
-            var validacao = await ValidarModelo();
-            if (validacao != null) return validacao;
-
-            var novoPrePedido = await _pedidoRepository.CriarPrePedidoAsync(prePedido);
-            return CreatedAtAction(nameof(CriarPrePedido), new { id = novoPrePedido.IdPrePedido }, novoPrePedido);
-        }
-
-        [HttpPost("confirmar/{prePedidoId}")]
-        public async Task<IActionResult> ConfirmarPrePedido(int prePedidoId)
-        {
-            var pedido = await _pedidoRepository.ConfirmarPrePedidoAsync(prePedidoId);
-            if (pedido == null)
-                return NotFound("Pré-pedido não encontrado.");
-
-            return Ok(pedido);
-        }
-
-        [HttpDelete("cancelar-pre-pedido/{prePedidoId}")]
-        public async Task<IActionResult> CancelarPrePedido(int prePedidoId)
-        {
-            var validacao = await ValidarModelo();
-            if (validacao != null) return validacao;
-
-            var existenciaPedido = await VerificarExistenciaPrePedido(prePedidoId);
-            if (existenciaPedido != null) return existenciaPedido;
-
-            return Ok(await _pedidoRepository.CancelarPrePedidoAsync(prePedidoId));
-        }
-
-        [HttpDelete("cancelar-pedido/{idPedido}")]
-        public async Task<IActionResult> CancelarPedido(int idPedido)
-        {
-            var validacao = await ValidarModelo();
-            if (validacao != null) return validacao;
-
-            var existenciaPedido = await VerificarExistenciaPedido(idPedido);
-            if (existenciaPedido != null) return existenciaPedido;
-
-            // await _pedidoRepository.CancelarPedidoAsync(idPedido);
-            return Ok(await _pedidoRepository.CancelarPedidoAsync(idPedido));
-        }
-
-        [HttpGet]
+        [HttpGet("listar-pedidos")]
         public async Task<IActionResult> ListarPedidos([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page <= 0 || pageSize <= 0)
@@ -109,8 +64,8 @@ namespace ClientesEProdutos.Controllers
             return Ok(resposta);
         }
 
-        [HttpGet("{pedidoId}")]
-        public async Task<IActionResult> ConsultarPedido(int pedidoId)
+        [HttpGet("listar-pedido-porId/{pedidoId}")]
+        public async Task<IActionResult> ConsultarPedidoPorId(int pedidoId)
         {
             var existencia = await VerificarExistenciaPedido(pedidoId);
             if (existencia != null) return existencia;
@@ -120,6 +75,52 @@ namespace ClientesEProdutos.Controllers
                 return NotFound("Pedido não encontrado.");
 
             return Ok(pedido);
+        }
+
+        [HttpPost("criar-pre-pedido")]
+        public async Task<IActionResult> CriarPrePedido([FromBody] PrePedido prePedido)
+        {
+            var validacao = await ValidarModelo();
+            if (validacao != null) return validacao;
+
+            var novoPrePedido = await _pedidoRepository.CriarPrePedidoAsync(prePedido);
+            return CreatedAtAction(nameof(CriarPrePedido), new { id = novoPrePedido.IdPrePedido }, novoPrePedido);
+        }
+
+        [HttpPost("confirmar-pre-pedido/{prePedidoId}")]
+        public async Task<IActionResult> ConfirmarPrePedido(int prePedidoId)
+        {
+            var pedido = await _pedidoRepository.ConfirmarPrePedidoAsync(prePedidoId);
+            if (pedido == null)
+                return NotFound("Pré-pedido não encontrado.");
+
+            return Ok($"Pedido Confirmado com Sucesso! Pedido Nrº {pedido.IdPedido}");
+        }
+
+        [HttpDelete("cancelar-pre-pedido/{prePedidoId}")]
+        public async Task<IActionResult> CancelarPrePedido(int prePedidoId)
+        {
+            var validacao = await ValidarModelo();
+            if (validacao != null) return validacao;
+
+            var existenciaPedido = await VerificarExistenciaPrePedido(prePedidoId);
+            if (existenciaPedido != null) return existenciaPedido;
+
+            await _pedidoRepository.CancelarPrePedidoAsync(prePedidoId);
+            return Ok($"Pré Pedido {prePedidoId} Cancelado com Sucesso!");
+        }
+
+        [HttpDelete("cancelar-pedido/{idPedido}")]
+        public async Task<IActionResult> CancelarPedido(int idPedido)
+        {
+            var validacao = await ValidarModelo();
+            if (validacao != null) return validacao;
+
+            var existenciaPedido = await VerificarExistenciaPedido(idPedido);
+            if (existenciaPedido != null) return existenciaPedido;
+
+            await _pedidoRepository.CancelarPedidoAsync(idPedido);
+            return Ok($"Pedido {idPedido} Removido com Sucesso!");
         }
 
         private async Task<IActionResult> VerificarExistenciaPedido(int pedidoId)

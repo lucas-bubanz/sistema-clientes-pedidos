@@ -29,7 +29,9 @@ namespace ClientesEProdutos.Repositories
 
         public async Task<Clientes> ListarClientePorIdAsync(int id)
         {
-            return await _context.clientes.FirstOrDefaultAsync(i => i.Codigo_cliente == id);
+            return await _context.clientes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Codigo_cliente == id);
         }
 
         public async Task<IEnumerable<ClienteDto>> ListarClientesAsync(int page, int pageSize)
