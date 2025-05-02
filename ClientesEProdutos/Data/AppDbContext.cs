@@ -18,7 +18,7 @@ namespace ApplicationDBContext.Data
         public DbSet<Produtos> produtos { get; set; }
         public DbSet<PrePedido> PrePedidos { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
-
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -79,6 +79,10 @@ namespace ApplicationDBContext.Data
                 .WithMany()
                 .HasForeignKey(pp => pp.CodigoProduto)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }

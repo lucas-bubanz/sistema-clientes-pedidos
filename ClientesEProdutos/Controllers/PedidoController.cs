@@ -1,12 +1,14 @@
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientesEProdutos.Controllers
 {
     [ApiController]
-    [Route("v1/[controller]")]
-    public class PedidoController : Controller
+    [Route("api/[controller]")]
+    [Authorize] // Proteção base para todas as rotas
+    public class PedidoController : ControllerBase
     {
         private readonly IPedidoRepository _pedidoRepository;
 
@@ -131,6 +133,29 @@ namespace ClientesEProdutos.Controllers
 
             await _pedidoRepository.CancelarPedidoAsync(idPedido);
             return Ok($"Pedido {idPedido} Removido com Sucesso!");
+        }
+
+        [HttpGet("listarTodosPedidos")]
+        [Authorize(Roles = "Admin")] // Apenas administradores podem ver todos os pedidos
+        public async Task<IActionResult> GetAllAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            if (page <= 0 || pageSize <= 0)
+            {
+                return BadRequest("Os parâmetros de paginação devem ser maiores que zero.");
+            }
+
+            var totalRegistros = await _pedidoRepository.ObterTotalPedidosAsync();
+            var pedidos = await _pedidoRepository.ListarPedidosAsync(page, pageSize);
+
+            var resposta = new
+            {
+                TotalRegistros = totalRegistros,
+                TotalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize),
+                PaginaAtual = page,
+                Pedidos = pedidos
+            };
+
+            return Ok(resposta);
         }
 
         private async Task<IActionResult> VerificarExistenciaPedido(int pedidoId)

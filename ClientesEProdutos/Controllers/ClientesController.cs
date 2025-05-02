@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ClientesEProdutos.Interfaces;
 using ClientesEProdutos.Models.Entities;
 
 namespace ClientesEProdutos.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("v1/[controller]")]
+    [Authorize] // Adiciona proteção em todas as rotas
     public class ClientesController : Controller
     {
         private readonly IClienteRepository _repository;
