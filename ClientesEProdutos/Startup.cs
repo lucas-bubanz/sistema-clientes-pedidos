@@ -29,7 +29,7 @@ namespace ClientesEProdutos.Startup
             services.AddScoped<IClienteRepository, ClienteRepository>();
             services.AddScoped<IPedidoRepository, PedidoRepository>();
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(Startup).Assembly);
 
             // Adiciona suporte a controladores
             services.AddControllers()
